@@ -1,13 +1,16 @@
-import { NextResponse, NextRequest, userAgent } from "next/server";
-import requestIp from "request-ip";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function GET(req: Request) {
-  // @ts-ignore
-  const detectedIp = requestIp.getClientIp(req);
+export async function GET(req: NextRequest) {
+  if (!req.ip) {
+    return NextResponse.json(
+      { message: "No! Ip address found" },
+      { status: 404 }
+    );
+  }
 
   const data = {
     ok: true,
-    ip: detectedIp,
+    ip: req.ip,
     userAgent: req.headers.get("user-agent"),
   };
   return NextResponse.json(data, { status: 200 });
