@@ -1,17 +1,19 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, userAgent } from "next/server";
 
 export async function GET(req: NextRequest) {
-  if (!req.ip) {
-    return NextResponse.json(
-      { message: "No! Ip address found" },
-      { status: 404 }
-    );
+  const response = await fetch("https://geolocation-db.com/json/");
+  if (!response.ok) {
+    console.error("failed to fetch");
   }
+
+  const { IPv4 } = await response.json();
+  const { ua } = userAgent(req);
 
   const data = {
     ok: true,
-    ip: req.ip,
-    userAgent: req.headers.get("user-agent"),
+    ip_address: IPv4,
+    user_agent: ua,
   };
+
   return NextResponse.json(data, { status: 200 });
 }
